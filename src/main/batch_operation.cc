@@ -55,7 +55,9 @@ class ResultCallback : public SimpleCallbackInterface {
 BatchOperation::BatchOperation(std::shared_ptr<NonblockingKineticConnectionInterface> connection)
 :batch_id(0), con(connection), invalid(KineticStatus(StatusCode::CLIENT_INTERNAL_ERROR,
         "This Batch Operation is invalid.")) {
-    con->BatchStart(std::make_shared<FireAndForget>(), &batch_id);
+    auto rcb = std::make_shared<ResultCallback>();
+    con->BatchStart(rcb, &batch_id);
+    this->getResult(rcb);
 }
 
 BatchOperation::~BatchOperation() {
