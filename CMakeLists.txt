@@ -32,7 +32,7 @@ else(APPLE)
   endif(${BUILD_FOR_ARM})
 endif(APPLE)
 
-set(CMAKE_CXX_FLAGS "--std=c++0x -Wall -Wextra -Werror -Wno-unknown-warning-option -Wno-unused-parameter -Wno-null-dereference -Wno-unused-local-typedefs -DGTEST_USE_OWN_TR1_TUPLE=1 ${BUILD_PIC_COMPILER_FLAGS} -D__MIPSEL__")
+set(CMAKE_CXX_FLAGS "--std=c++0x -Wall -Wextra -Wno-unused-parameter -Wno-unused-local-typedefs -DGTEST_USE_OWN_TR1_TUPLE=1 ${BUILD_PIC_COMPILER_FLAGS}")
 
 #set(TEST_BINARY "kinetic_client_test")
 #set(TEST_BINARY_PATH ${kinetic_cpp_client_BINARY_DIR}/${TEST_BINARY})
@@ -123,9 +123,9 @@ ExternalProject_add(
 ExternalProject_add(
     protoc
     PREFIX ${EXTERNAL_PREFIX}/host
-    URL "${kinetic_cpp_client_SOURCE_DIR}/tarballs/protobuf-2.5.0.tar.bz2"
-    URL_MD5 "c07eb613ae44e07d9a9bd8319faf7363"
-    CONFIGURE_COMMAND ../protoc/configure --prefix=${EXTERNAL_PREFIX}/host --enable-static CXXFLAGS=-D__MIPSEL__
+    URL "${kinetic_cpp_client_SOURCE_DIR}/tarballs/protobuf-2.6.0.tar.bz2"
+    URL_MD5 "78253c509a055dab316a21e754cb278a"
+    CONFIGURE_COMMAND ../protoc/configure --prefix=${EXTERNAL_PREFIX}/host --enable-static
 )
 
 # Protobuf code generation rules
@@ -136,9 +136,9 @@ set(PROTO_MODIFIED_PATH "${PROTO_DIR}/kinetic_client.proto")
 ExternalProject_add(
     protobuf
     PREFIX ${EXTERNAL_PREFIX}
-    URL "${kinetic_cpp_client_SOURCE_DIR}/tarballs/protobuf-2.5.0.tar.bz2"
-    URL_MD5 "c07eb613ae44e07d9a9bd8319faf7363"
-    CONFIGURE_COMMAND ../protobuf/configure --prefix=${EXTERNAL_PREFIX} --enable-static --with-protoc=${PROTOC_PATH} ${CONFIG_HOST_FLAG} ${CHILD_MAKE_FLAGS} ${PIC_MAKE_FLAGS} CXXFLAGS=-D__MIPSEL__
+    URL "${kinetic_cpp_client_SOURCE_DIR}/tarballs/protobuf-2.6.0.tar.bz2"
+    URL_MD5 "78253c509a055dab316a21e754cb278a"
+    CONFIGURE_COMMAND ../protobuf/configure --prefix=${EXTERNAL_PREFIX} --enable-static --with-protoc=${PROTOC_PATH} ${CONFIG_HOST_FLAG} ${CHILD_MAKE_FLAGS} ${PIC_MAKE_FLAGS}
     DEPENDS protoc
 )
 
