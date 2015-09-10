@@ -44,6 +44,8 @@ class SocketWrapper : public SocketWrapperInterface {
     int port_;
     bool nonblocking_;
     int fd_;
+    bool use_unix_domain_;
+    bool IsLocalhost();
 };
 
 } // namespace kinetic
