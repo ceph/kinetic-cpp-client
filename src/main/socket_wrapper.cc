@@ -80,7 +80,8 @@ bool SocketWrapper::IsLocalhost() {
       perror("gethostname");
       exit(EXIT_FAILURE);
     }
-    if(host_.c_str() == hostname) {
+    string str_hostname = hostname;
+    if(host_ == str_hostname) {
       return true;
     }
 
@@ -103,13 +104,22 @@ bool SocketWrapper::IsLocalhost() {
     // check host_ address is equal to local machine address
     struct addrinfo* ai;
     for(ai = result; ai != NULL; ai = ai->ai_next) {
-      unsigned char buf[sizeof(struct in6_addr)];
+      void* buf;
+      switch(ai->ai_addr->sa_family) {
+      case AF_INET:
+	buf = &((struct sockaddr_in *) ai->ai_addr)->sin_addr;
+	break;
+      case AF_INET6:
+	buf = &((struct sockaddr_in6 *) ai->ai_addr)->sin6_addr;
+	break;
+      }
       char inetaddr[INET6_ADDRSTRLEN];
       if(inet_ntop(ai->ai_addr->sa_family, buf, inetaddr, INET6_ADDRSTRLEN) == NULL) {
 	perror("inet_ntop");
 	exit(EXIT_FAILURE);
       }
-      if(host_.c_str() == inetaddr) {
+      string str_inetaddr = inetaddr;
+      if(host_ == str_inetaddr) {
 	break;
       }
     }
