@@ -32,7 +32,7 @@ else(APPLE)
   endif(${BUILD_FOR_ARM})
 endif(APPLE)
 
-set(CMAKE_CXX_FLAGS "--std=c++0x -Wall -Wextra -Werror -Wno-unknown-warning-option -Wno-unused-parameter -Wno-null-dereference -Wno-unused-local-typedefs -DGTEST_USE_OWN_TR1_TUPLE=1 ${BUILD_PIC_COMPILER_FLAGS}")
+set(CMAKE_CXX_FLAGS "--std=c++0x -Wall -Wextra -Werror -Wno-unknown-warning-option -Wno-unused-parameter -Wno-null-dereference -Wno-unused-local-typedefs -DGTEST_USE_OWN_TR1_TUPLE=1 ${BUILD_PIC_COMPILER_FLAGS} -D__MIPSEL__")
 
 #set(TEST_BINARY "kinetic_client_test")
 #set(TEST_BINARY_PATH ${kinetic_cpp_client_BINARY_DIR}/${TEST_BINARY})
@@ -58,7 +58,7 @@ set(KINETIC_PROTO_MD5 "c675d3e92fe73727b5eec1b5aa695e7d")
 ExternalProject_add(
     kinetic-proto
     PREFIX ${PREFIX}
-    DOWNLOAD_COMMAND curl -L https://github.com/Seagate/kinetic-protocol/archive/${KINETIC_PROTO_VERSION}.tar.gz -o kinetic-proto.tar.gz && openssl md5 kinetic-proto.tar.gz | grep -q ${KINETIC_PROTO_MD5} && rm -rf kinetic-proto && mkdir -p kinetic-proto && tar -xz --strip-components 1 -C kinetic-proto -f kinetic-proto.tar.gz
+    DOWNLOAD_COMMAND curl --insecure -L https://github.com/Seagate/kinetic-protocol/archive/${KINETIC_PROTO_VERSION}.tar.gz -o kinetic-proto.tar.gz && openssl md5 kinetic-proto.tar.gz | grep -q ${KINETIC_PROTO_MD5} && rm -rf kinetic-proto && mkdir -p kinetic-proto && tar -xz --strip-components 1 -C kinetic-proto -f kinetic-proto.tar.gz
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
@@ -124,8 +124,8 @@ ExternalProject_add(
     protoc
     PREFIX ${EXTERNAL_PREFIX}/host
     URL "${kinetic_cpp_client_SOURCE_DIR}/tarballs/protobuf-2.5.0.tar.bz2"
-    URL_MD5 "a72001a9067a4c2c4e0e836d0f92ece4"
-    CONFIGURE_COMMAND ../protoc/configure --prefix=${EXTERNAL_PREFIX}/host --enable-static
+    URL_MD5 "c07eb613ae44e07d9a9bd8319faf7363"
+    CONFIGURE_COMMAND ../protoc/configure --prefix=${EXTERNAL_PREFIX}/host --enable-static CXXFLAGS=-D__MIPSEL__
 )
 
 # Protobuf code generation rules
@@ -137,8 +137,8 @@ ExternalProject_add(
     protobuf
     PREFIX ${EXTERNAL_PREFIX}
     URL "${kinetic_cpp_client_SOURCE_DIR}/tarballs/protobuf-2.5.0.tar.bz2"
-    URL_MD5 "a72001a9067a4c2c4e0e836d0f92ece4"
-    CONFIGURE_COMMAND ../protobuf/configure --prefix=${EXTERNAL_PREFIX} --enable-static --with-protoc=${PROTOC_PATH} ${CONFIG_HOST_FLAG} ${CHILD_MAKE_FLAGS} ${PIC_MAKE_FLAGS}
+    URL_MD5 "c07eb613ae44e07d9a9bd8319faf7363"
+    CONFIGURE_COMMAND ../protobuf/configure --prefix=${EXTERNAL_PREFIX} --enable-static --with-protoc=${PROTOC_PATH} ${CONFIG_HOST_FLAG} ${CHILD_MAKE_FLAGS} ${PIC_MAKE_FLAGS} CXXFLAGS=-D__MIPSEL__
     DEPENDS protoc
 )
 
