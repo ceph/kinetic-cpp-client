@@ -119,7 +119,7 @@ KineticStatus BatchOperation::Commit(const shared_ptr<SimpleCallbackInterface> c
     con->BatchCommit(batch_id, cb ? cb : rcb);
     batch_id = 0;
     if (cb) return KineticStatus(StatusCode::OK, "");
-    printf("BatchOperation::Commit\n");;
+    //printf("BatchOperation::Commit\n");;
     return this->getResult(rcb);
 }
 
