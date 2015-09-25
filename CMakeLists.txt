@@ -47,8 +47,11 @@ set(CMAKE_CXX_FLAGS "--std=c++0x -Wall -Wextra -Wno-unused-parameter -Wno-unused
 #    gmock
 #    openssl
 #)
+endif(BUILD_NATIVE)
 
 set(GENERATED_SOURCES_PATH ${kinetic_cpp_client_SOURCE_DIR}/src/main/generated)
+
+if(BUILD_NATIVE)
 
 set(PREFIX "${CMAKE_BINARY_DIR}/vendor")
 set(EXTERNAL_PREFIX "${kinetic_cpp_client_BINARY_DIR}/vendor")
@@ -151,8 +154,12 @@ add_custom_command(
     COMMAND mkdir -p ${GENERATED_SOURCES_PATH} && sed 's/com\\.seagate\\.kinetic\\.proto/com.seagate.kinetic.client.proto/' ${PROTO_ORIG_PATH} > ${PROTO_MODIFIED_PATH} && ${PROTOC_PATH} -I=${PROTO_DIR} --cpp_out=${GENERATED_SOURCES_PATH} ${PROTO_MODIFIED_PATH}
     DEPENDS kinetic-proto protoc protobuf
 )
+
+endif(BUILD_NATIVE)
+
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${GENERATED_SOURCES_PATH})
 
+if(BUILD_NATIVE)
 include_directories(
     include
     src/main/generated
@@ -181,16 +188,14 @@ set(LIBRARY_DEPENDENCIES
 
 else(BUILD_NATIVE)
 
-add_library(kinetic-protocol SHARED IMPORTED)
-set_property(TARGET kinetic-protocol PROPERTY IMPORTED_LOCATION "${CMAKE_LIBRARY_PATH}/libkinetic.pb.so")
 add_library(openssl SHARED IMPORTED)
 set_property(TARGET openssl PROPERTY IMPORTED_LOCATION "${CMAKE_LIBRARY_PATH}/libssl.so")
 
 include_directories(
     include
+    src/main/generated
     src/main
 
-    ${CMAKE_INCLUDE_PATH}/kinetic
     ${CMAKE_INCLUDE_PATH}/openssl
     ${CMAKE_INCLUDE_PATH}/google/protobuf
     ${CMAKE_INCLUDE_PATH}/glog
@@ -213,7 +218,6 @@ if(LIBUNWIND)
     )
 endif()
 
-if(BUILD_NATIVE)
 add_library(kinetic_client
     src/main/generated/kinetic_client.pb.cc
     src/main/hmac_provider.cc
@@ -240,6 +244,7 @@ add_library(kinetic_client
 )
 add_dependencies(kinetic_client openssl)
 
+if(BUILD_NATIVE)
 #add_executable(${TEST_BINARY}
 #    src/test/kinetic_cpp_client_test.cc
 #    src/test/nonblocking_kinetic_connection_test.cc
@@ -304,33 +309,9 @@ add_custom_target(lint
 
 else(BUILD_NATIVE)
 
-add_library(kinetic_client
-    src/main/hmac_provider.cc
-    src/main/kinetic_connection_factory.cc
-    src/main/nonblocking_kinetic_connection.cc
-    src/main/threadsafe_nonblocking_kinetic_connection.cc
-    src/main/nonblocking_packet.cc
-    src/main/nonblocking_packet_writer_factory.cc
-    src/main/nonblocking_packet_service.cc
-    src/main/nonblocking_packet_sender.cc
-    src/main/nonblocking_packet_receiver.cc
-    src/main/nonblocking_string.cc
-    src/main/socket_wrapper.cc
-    src/main/blocking_kinetic_connection.cc
-    src/main/threadsafe_blocking_kinetic_connection.cc
-    src/main/status_code.cc
-    src/main/byte_stream.cc
-    src/main/incoming_string_value.cc
-    src/main/message_stream.cc
-    src/main/outgoing_string_value.cc
-    src/main/reader_writer.cc
-    src/main/key_range_iterator.cc
-    src/main/batch_operation.cc
-)
-add_dependencies(kinetic_client kinetic_protocol openssl)
-
 # installation rules
-install(DIRECTORY include/kinetic/ DESTINATION ${INC_INSTALL_DIR}/kinetic_client FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY include/kinetic/ DESTINATION ${INC_INSTALL_DIR}/kinetic FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY src/main/generated/ DESTINATION ${INC_INSTALL_DIR}/kinetic FILES_MATCHING PATTERN "*.h")
 install(TARGETS kinetic_client LIBRARY DESTINATION ${LIB_INSTALL_DIR})
 
 endif(BUILD_NATIVE)
