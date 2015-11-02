@@ -37,16 +37,16 @@ endif(APPLE)
 
 set(CMAKE_CXX_FLAGS "--std=c++0x -Wall -Wextra -Wno-unused-parameter -Wno-unused-local-typedefs -DGTEST_USE_OWN_TR1_TUPLE=1 ${BUILD_PIC_COMPILER_FLAGS}")
 
-#set(TEST_BINARY "kinetic_client_test")
-#set(TEST_BINARY_PATH ${kinetic_cpp_client_BINARY_DIR}/${TEST_BINARY})
-#set(INTEGRATION_TEST_BINARY "kinetic_integration_test")
-#set(INTEGRATION_TEST_BINARY_PATH ${kinetic_cpp_client_BINARY_DIR}/${INTEGRATION_TEST_BINARY})
-#set(TEST_LIBRARIES
-#    glog
-#    gtest
-#    gmock
-#    openssl
-#)
+set(TEST_BINARY "kinetic_client_test")
+set(TEST_BINARY_PATH ${kinetic_cpp_client_BINARY_DIR}/${TEST_BINARY})
+set(INTEGRATION_TEST_BINARY "kinetic_integration_test")
+set(INTEGRATION_TEST_BINARY_PATH ${kinetic_cpp_client_BINARY_DIR}/${INTEGRATION_TEST_BINARY})
+set(TEST_LIBRARIES
+    glog
+    gtest
+    gmock
+    openssl
+)
 endif(BUILD_NATIVE)
 
 set(GENERATED_SOURCES_PATH ${kinetic_cpp_client_SOURCE_DIR}/src/main/generated)
@@ -165,8 +165,8 @@ include_directories(
     src/main/generated
     src/main
 
-    #src/test/mock
-    #src/test
+    src/test/mock
+    src/test
 
     ${EXTERNAL_PREFIX}/include
     ${EXTERNAL_PREFIX}/src/gmock/include
@@ -245,52 +245,52 @@ add_library(kinetic_client
 add_dependencies(kinetic_client openssl)
 
 if(BUILD_NATIVE)
-#add_executable(${TEST_BINARY}
-#    src/test/kinetic_cpp_client_test.cc
-#    src/test/nonblocking_kinetic_connection_test.cc
-#    src/test/nonblocking_packet_service_test.cc
-#    src/test/nonblocking_packet_sender_test.cc
-#    src/test/nonblocking_packet_receiver_test.cc
-#    src/test/nonblocking_packet_test.cc
-#    src/test/nonblocking_string_test.cc
-#    src/test/hmac_provider_test.cc
-#    src/test/message_stream_test.cc
-#    src/test/string_value_test.cc
-#)
-#target_link_libraries(${TEST_BINARY} ${LIBRARY_DEPENDENCIES})
+add_executable(${TEST_BINARY}
+    src/test/kinetic_cpp_client_test.cc
+    src/test/nonblocking_kinetic_connection_test.cc
+    src/test/nonblocking_packet_service_test.cc
+    src/test/nonblocking_packet_sender_test.cc
+    src/test/nonblocking_packet_receiver_test.cc
+    src/test/nonblocking_packet_test.cc
+    src/test/nonblocking_string_test.cc
+    src/test/hmac_provider_test.cc
+    src/test/message_stream_test.cc
+    src/test/string_value_test.cc
+)
+target_link_libraries(${TEST_BINARY} ${LIBRARY_DEPENDENCIES})
 
-#add_executable(${INTEGRATION_TEST_BINARY}
-#    src/integration_test/delete_test.cc
-#    src/integration_test/get_test.cc
-#    src/integration_test/nonexistent_server_test.cc
-#    src/integration_test/put_test.cc
-#    src/integration_test/blocking_smoketest.cc
-#    src/integration_test/batch_operation_test.cc
-#    src/test/kinetic_cpp_client_test.cc
-#)
-#target_link_libraries(${INTEGRATION_TEST_BINARY} ${LIBRARY_DEPENDENCIES})
+add_executable(${INTEGRATION_TEST_BINARY}
+    src/integration_test/delete_test.cc
+    src/integration_test/get_test.cc
+    src/integration_test/nonexistent_server_test.cc
+    src/integration_test/put_test.cc
+    src/integration_test/blocking_smoketest.cc
+    src/integration_test/batch_operation_test.cc
+    src/test/kinetic_cpp_client_test.cc
+)
+target_link_libraries(${INTEGRATION_TEST_BINARY} ${LIBRARY_DEPENDENCIES})
 
 # Rule for running unit tests
-#add_custom_target(check
-#    COMMAND ${TEST_BINARY_PATH} --gtest_output=xml:gtestresults.xml
-#    DEPENDS ${TEST_BINARY_PATH}
-#)
+add_custom_target(check
+    COMMAND ${TEST_BINARY_PATH} --gtest_output=xml:gtestresults.xml
+    DEPENDS ${TEST_BINARY_PATH}
+)
 
 # Rule for running integration tests
-#add_custom_target(integration_test
-#    COMMAND ${INTEGRATION_TEST_BINARY_PATH} --gtest_output=xml:integrationresults.xml
-#    DEPENDS ${INTEGRATION_TEST_BINARY_PATH}
-#)
+add_custom_target(integration_test
+    COMMAND ${INTEGRATION_TEST_BINARY_PATH} --gtest_output=xml:integrationresults.xml
+    DEPENDS ${INTEGRATION_TEST_BINARY_PATH}
+)
 
 # Rules for running unit and integration tests under Valgrind
-#add_custom_target(test_valgrind
-#    COMMAND valgrind --leak-check=full --show-reachable=yes --track-fds=yes --suppressions=${kinetic_cpp_client_SOURCE_DIR}/valgrind_linux.supp ${TEST_BINARY_PATH}
-#    DEPENDS ${TEST_BINARY_PATH}
-#)
-#add_custom_target(integration_test_valgrind
-#    COMMAND valgrind --leak-check=full --show-reachable=yes --track-fds=yes --suppressions=${kinetic_cpp_client_SOURCE_DIR}/valgrind_linux.supp ${INTEGRATION_TEST_BINARY_PATH}
-#    DEPENDS ${INTEGRATION_TEST_BINARY_PATH}
-#)
+add_custom_target(test_valgrind
+    COMMAND valgrind --leak-check=full --show-reachable=yes --track-fds=yes --suppressions=${kinetic_cpp_client_SOURCE_DIR}/valgrind_linux.supp ${TEST_BINARY_PATH}
+    DEPENDS ${TEST_BINARY_PATH}
+)
+add_custom_target(integration_test_valgrind
+    COMMAND valgrind --leak-check=full --show-reachable=yes --track-fds=yes --suppressions=${kinetic_cpp_client_SOURCE_DIR}/valgrind_linux.supp ${INTEGRATION_TEST_BINARY_PATH}
+    DEPENDS ${INTEGRATION_TEST_BINARY_PATH}
+)
 
 # Rule for generating docs
 add_custom_target(doc
