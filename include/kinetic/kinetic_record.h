@@ -37,14 +37,19 @@ using std::make_shared;
 /// metadata
 class KineticRecord {
     public:
-    KineticRecord(const shared_ptr<const string> value, const shared_ptr<const string> version) :
-            value_(value), version_(version) {
+    KineticRecord(const shared_ptr<const string> value, const shared_ptr<const string> version,
+	    const shared_ptr<const string> tag, Command_Algorithm algorithm) :
+            value_(value), version_(version), tag_(tag), algorithm_(
+		    algorithm) {
     }
-    KineticRecord(const string value, const string version) :
-	    value_(make_shared<string>(value)), version_(make_shared<string>(version)) {
+    KineticRecord(const string value, const string version, const string tag,
+	    Command_Algorithm algorithm) :
+        value_(make_shared<string>(value)), version_(make_shared<string>(version)),
+	tag_(make_shared<string>(tag)), algorithm_(algorithm) {
     }
+
     explicit KineticRecord(const KineticRecord& other) : value_(other.value_),
-        version_(other.version_) {
+        version_(other.version_), tag_(other.tag_), algorithm_(other.algorithm_) {
     }
 
     /// The value itself
@@ -59,24 +64,21 @@ class KineticRecord {
 
     /// An arbitrary tag, usually a hash or checksum of
     /// the value
-    /*
     const shared_ptr<const string> tag() const {
         return tag_;
     }
-    */
 
     /// The algorithm used to generate the tag
-    /*
     Command_Algorithm algorithm() const {
         return algorithm_;
     }
-    */
+
 
     private:
     const shared_ptr<const string> value_;
     const shared_ptr<const string> version_;
-    //const shared_ptr<const string> tag_;
-    //const Command_Algorithm algorithm_;
+    const shared_ptr<const string> tag_;
+    const Command_Algorithm algorithm_;
     // disallow operator=
     void operator=(const KineticRecord&);
 };

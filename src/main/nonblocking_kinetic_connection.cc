@@ -81,7 +81,9 @@ GetHandler::GetHandler(const shared_ptr<GetCallbackInterface> callback)
 
 void GetHandler::Handle(const Command &response, unique_ptr<const string> value) {
     unique_ptr<KineticRecord> record(new KineticRecord(shared_ptr<const string>(value.release()),
-						       make_shared<string>(response.body().keyvalue().dbversion())));
+	 make_shared<string>(response.body().keyvalue().dbversion()),
+	 make_shared<string>(response.body().keyvalue().tag()),
+	 response.body().keyvalue().algorithm()));
     callback_->Success(response.body().keyvalue().key(), move(record));
 }
 
@@ -378,11 +380,9 @@ HandlerKey NonblockingKineticConnection::doPut(const shared_ptr<const string> ke
         request->mutable_header()->set_batchid(batch_id);
     }
 
-    /*
     request->mutable_body()->mutable_keyvalue()->set_tag(*(record->tag()));
     request->mutable_body()->mutable_keyvalue()->set_algorithm(
            record->algorithm());
-    */
 
     request->mutable_body()->mutable_keyvalue()->set_synchronization(
            this->GetSynchronizationForPersistMode(persistMode));
