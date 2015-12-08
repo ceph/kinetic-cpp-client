@@ -9,31 +9,14 @@ find_package (Threads)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(BUILD_FOR_ARM "Build for ARM instead of x86" off)
-option(BUILD_PIC "Build static PIC" off)
+option(BUILD_PIC "Build static PIC" on)
 
 set(BUILD_PIC_COMPILER_FLAGS "")
 
 if(BUILD_PIC)
   set(BUILD_PIC_COMPILER_FLAGS "-fPIC")
+  set(PIC_MAKE_FLAGS "--with-pic")
 endif(BUILD_PIC)
-
-if(APPLE)
-  # On OSX we must explicitly specify that we want to build for x86-64
-  set(OPENSSL_CONFIGURE_COMMAND ./Configure darwin64-x86_64-cc)
-else(APPLE)
-  if(${BUILD_FOR_ARM})
-    set(CMAKE_C_COMPILER "arm-marvell-linux-gnueabi-gcc")
-    set(CMAKE_CXX_COMPILER "arm-marvell-linux-gnueabi-g++")
-    set(CMAKE_RANLIB "arm-marvell-linux-gnueabi-ranlib")
-    set(OPENSSL_CONFIGURE_COMMAND ../openssl/Configure linux-armv4)
-    set(CONFIG_HOST_FLAG --host=arm)
-    set(CHILD_MAKE_FLAGS CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} RANLIB=${CMAKE_RANLIB})
-  else(${BUILD_FOR_ARM})
-    set(CMAKE_C_COMPILER "gcc")
-    set(CMAKE_CXX_COMPILER "g++")
-    set(OPENSSL_CONFIGURE_COMMAND ../openssl/config -DPURIFY)
-  endif(${BUILD_FOR_ARM})
-endif(APPLE)
 
 set(CMAKE_CXX_FLAGS "--std=c++0x -Wall -Wextra -Wno-unused-parameter -Wno-unused-local-typedefs -DGTEST_USE_OWN_TR1_TUPLE=1 ${BUILD_PIC_COMPILER_FLAGS}")
 
@@ -45,7 +28,6 @@ set(TEST_LIBRARIES
     glog
     gtest
     gmock
-    openssl
 )
 endif(BUILD_NATIVE)
 
@@ -76,7 +58,7 @@ ExternalProject_add(
     PREFIX ${EXTERNAL_PREFIX}
     URL "${kinetic_cpp_client_SOURCE_DIR}/tarballs/gflags-2.0-no-svn-files.tar.gz"
     URL_MD5 "9084829124e02a7e6be0f0f824523423"
-    CONFIGURE_COMMAND ../gflags/configure --prefix=${EXTERNAL_PREFIX} --enable-static ${CONFIG_HOST_FLAG} ${CHILD_MAKE_FLAGS} ${PIC_MAKE_FLAGS}
+    CONFIGURE_COMMAND ../gflags/configure --prefix=${EXTERNAL_PREFIX} --enable-static ${CONFIG_HOST_FLAG} ${CHILD_MAKE_FLAGS} ${PIC_MAKE_FLAGS} 
 )
 
 ExternalProject_add(
@@ -112,17 +94,6 @@ ExternalProject_add(
     DEPENDS gtest
 )
 
-ExternalProject_add(
-    openssl
-    PREFIX ${EXTERNAL_PREFIX}
-    URL "${kinetic_cpp_client_SOURCE_DIR}/tarballs/openssl-1.0.1g.tar.gz"
-    URL_MD5 "de62b43dfcd858e66a74bee1c834e959"
-    BUILD_IN_SOURCE 1
-    CONFIGURE_COMMAND ${OPENSSL_CONFIGURE_COMMAND} --prefix=${EXTERNAL_PREFIX} ${BUILD_PIC_COMPILER_FLAG}
-    BUILD_COMMAND touch apps/openssl && touch openssl.pc && make ${CHILD_MAKE_FLAGS} build_libs libssl.pc libcrypto.pc
-    INSTALL_COMMAND make install_sw
-)
-
 # The protobuf build requires the existence of a protoc binary that can be
 # executed on the host machine. To handle cross compilation, we always build
 # protobuf once for the host so that we have a suitable copy of protoc.
@@ -144,7 +115,7 @@ ExternalProject_add(
     PREFIX ${EXTERNAL_PREFIX}
     URL "${kinetic_cpp_client_SOURCE_DIR}/tarballs/protobuf-2.6.0.tar.bz2"
     URL_MD5 "78253c509a055dab316a21e754cb278a"
-    CONFIGURE_COMMAND ../protobuf/configure --prefix=${EXTERNAL_PREFIX} --enable-static --with-protoc=${PROTOC_PATH} ${CONFIG_HOST_FLAG} ${CHILD_MAKE_FLAGS} ${PIC_MAKE_FLAGS}
+    CONFIGURE_COMMAND ../protobuf/configure --prefix=${EXTERNAL_PREFIX} --enable-static --with-protoc=${PROTOC_PATH} ${CONFIG_HOST_FLAG} ${CHILD_MAKE_FLAGS} ${PIC_MAKE_FLAGS} 
     DEPENDS protoc
 )
 
