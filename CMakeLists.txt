@@ -15,6 +15,7 @@ set(BUILD_PIC_COMPILER_FLAGS "")
 
 if(BUILD_PIC)
   set(BUILD_PIC_COMPILER_FLAGS "-fPIC")
+  set(PIC_MAKE_FLAGS "--with-pic")
 endif(BUILD_PIC)
 
 if(APPLE)
