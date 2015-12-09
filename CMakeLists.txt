@@ -9,7 +9,7 @@ find_package (Threads)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(BUILD_FOR_ARM "Build for ARM instead of x86" off)
-option(BUILD_PIC "Build static PIC" off)
+option(BUILD_PIC "Build static PIC" on)
 
 set(BUILD_PIC_COMPILER_FLAGS "")
 
