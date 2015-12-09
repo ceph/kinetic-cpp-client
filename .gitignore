@@ -39,3 +39,6 @@ doxygen_warnings.log
 *.pb.cc
 *.pb.h
 tmp
+
+# cmake build env
+/build
